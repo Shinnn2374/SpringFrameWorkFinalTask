@@ -1,7 +1,7 @@
 package com.example.finalTask.controller;
 
-import com.example.finalTask.dto.HotelRequestDto;
-import com.example.finalTask.dto.HotelResponseDto;
+import com.example.finalTask.dto.hotel.HotelRequestDto;
+import com.example.finalTask.dto.hotel.HotelResponseDto;
 import com.example.finalTask.services.HotelService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

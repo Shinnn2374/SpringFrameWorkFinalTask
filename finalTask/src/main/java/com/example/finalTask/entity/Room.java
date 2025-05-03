@@ -1,7 +1,7 @@
 package com.example.finalTask.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -9,17 +9,30 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
 @Table(name = "rooms")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Room {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
+
+    @Column(columnDefinition = "TEXT")
     private String description;
+
+    @Column(nullable = false, unique = true)
     private String number;
+
+    @Column(nullable = false)
     private BigDecimal price;
+
+    @Column(name = "max_people", nullable = false)
     private int maxPeople;
 
     @ElementCollection
@@ -27,7 +40,7 @@ public class Room {
     @Column(name = "date")
     private Set<LocalDate> unavailableDates = new HashSet<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hotel_id", nullable = false)
     private Hotel hotel;
 }

@@ -1,7 +1,7 @@
 package com.example.finalTask.services;
 
-import com.example.finalTask.dto.HotelRequestDto;
-import com.example.finalTask.dto.HotelResponseDto;
+import com.example.finalTask.dto.hotel.HotelRequestDto;
+import com.example.finalTask.dto.hotel.HotelResponseDto;
 import com.example.finalTask.entity.Hotel;
 import com.example.finalTask.exception.NotFoundException;
 import com.example.finalTask.mapper.HotelMapper;

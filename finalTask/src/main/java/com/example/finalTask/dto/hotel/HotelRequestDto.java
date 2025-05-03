@@ -1,4 +1,4 @@
-package com.example.finalTask.dto;
+package com.example.finalTask.dto.hotel;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
