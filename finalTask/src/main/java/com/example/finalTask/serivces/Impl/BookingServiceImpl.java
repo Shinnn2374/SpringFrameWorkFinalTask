@@ -63,7 +63,7 @@ public class BookingServiceImpl implements BookingService {
         return bookingMapper.toDto(savedBooking);
     }
 
-    private void validateBookingDates(BookingRequestDto bookingRequestDto) {
+    public void validateBookingDates(BookingRequestDto bookingRequestDto) {
         if (bookingRequestDto.getCheckInDate().isBefore(LocalDate.now())) {
             throw new BadRequestException("Check-in date cannot be in the past");
         }
@@ -73,7 +73,7 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    private boolean isRoomBooked(Long roomId, LocalDate checkInDate, LocalDate checkOutDate) {
+    public boolean isRoomBooked(Long roomId, LocalDate checkInDate, LocalDate checkOutDate) {
         return bookingRepository.existsByRoomIdAndCheckInDateLessThanEqualAndCheckOutDateGreaterThanEqual(
                 roomId, checkOutDate, checkInDate);
     }

@@ -13,6 +13,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -20,12 +23,14 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public UserResponseDto findById(Long id) {
+    @Override
+    public UserResponseDto findById(long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
         return userMapper.toDto(user);
     }
 
+    @Override
     @Transactional
     public UserResponseDto create(UserRequestDto userRequestDto) {
         if (userRepository.existsByUsernameOrEmail(userRequestDto.getUsername(), userRequestDto.getEmail())) {
@@ -38,12 +43,13 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDto(savedUser);
     }
 
+    @Override
     @Transactional
-    public UserResponseDto update(Long id, UserRequestDto userRequestDto) {
+    public UserResponseDto update(long id, UserRequestDto userRequestDto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
 
-        if (!user.getUsername().equals(userRequestDto.getUsername()) {
+        if (!user.getUsername().equals(userRequestDto.getUsername())) {
             throw new BadRequestException("Username cannot be changed");
         }
 
@@ -61,11 +67,26 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDto(updatedUser);
     }
 
+    @Override
     @Transactional
-    public void delete(Long id) {
+    public void delete(long id) {
         if (!userRepository.existsById(id)) {
             throw new NotFoundException("User not found with id: " + id);
         }
         userRepository.deleteById(id);
+    }
+
+    @Override
+    public List<UserResponseDto> findAll() {
+        return userRepository.findAll().stream()
+                .map(userMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public UserResponseDto findByUsername(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException("User not found with username: " + username));
+        return userMapper.toDto(user);
     }
 }

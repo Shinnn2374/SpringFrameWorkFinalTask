@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findAllByRoomId(Long roomId);
-    List<User> findAllByUserId(Long userId);
+    List<Booking> findAllByUserId(Long userId);
     boolean existsByRoomIdAndCheckInDateLessThanEqualAndCheckOutDateGreaterThanEqual(
             Long roomId, LocalDate checkOutDate, LocalDate checkInDate);
 }
