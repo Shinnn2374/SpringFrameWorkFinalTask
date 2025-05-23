@@ -75,23 +75,16 @@ public class HotelServiceImpl implements HotelService {
         if (updateRatingRequest.getNewMark() < 1 || updateRatingRequest.getNewMark() > 5) {
             throw new BadRequestException("Rating must be between 1 and 5");
         }
-
         Hotel hotel = hotelRepository.findById(hotelId)
                 .orElseThrow(() -> new NotFoundException("Hotel not found with id: " + hotelId));
-
         double currentRating = hotel.getRating();
         int numberOfRatings = hotel.getNumberOfRatings();
-
-        // Вычисляем новую оценку по формуле
         double totalRating = currentRating * numberOfRatings;
         totalRating = totalRating - currentRating + updateRatingRequest.getNewMark();
-
         double newRating = Math.round((totalRating / numberOfRatings) * 10) / 10.0;
         numberOfRatings += 1;
-
         hotel.setRating(newRating);
         hotel.setNumberOfRatings(numberOfRatings);
-
         Hotel updatedHotel = hotelRepository.save(hotel);
         return hotelMapper.toDto(updatedHotel);
     }

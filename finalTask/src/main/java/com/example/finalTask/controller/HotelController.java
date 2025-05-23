@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -49,9 +50,11 @@ public class HotelController {
     }
 
     @PostMapping("/{id}/rating")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
     public HotelResponseDto updateRating(
             @PathVariable Long id,
-            @RequestBody @Valid UpdateRatingRequestDto updateRatingRequest) {
+            @RequestBody @Valid UpdateRatingRequestDto updateRatingRequest
+    ) {
         return hotelService.updateRating(id, updateRatingRequest);
     }
 }

@@ -3,6 +3,7 @@ package com.example.finalTask.serivces;
 import com.example.finalTask.dto.hotel.HotelRequestDto;
 import com.example.finalTask.dto.hotel.HotelResponseDto;
 import com.example.finalTask.dto.hotel.HotelsListResponseDto;
+import com.example.finalTask.dto.rating.UpdateRatingRequestDto;
 import org.springframework.data.domain.Pageable;
 
 public interface HotelService {
@@ -12,4 +13,5 @@ public interface HotelService {
     HotelResponseDto create(HotelRequestDto hotelRequestDto);
     HotelResponseDto update(Long id, HotelRequestDto hotelRequestDto);
     void delete(Long id);
+    HotelResponseDto updateRating(Long hotelId, UpdateRatingRequestDto updateRatingRequest);
 }
