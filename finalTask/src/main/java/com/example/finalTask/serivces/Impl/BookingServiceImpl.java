@@ -2,12 +2,14 @@ package com.example.finalTask.serivces.Impl;
 
 import com.example.finalTask.dto.booking.BookingRequestDto;
 import com.example.finalTask.dto.booking.BookingResponseDto;
+import com.example.finalTask.dto.statistics.BookingEvent;
 import com.example.finalTask.entity.Booking;
 import com.example.finalTask.entity.Room;
 import com.example.finalTask.entity.User;
 import com.example.finalTask.exception.BadRequestException;
 import com.example.finalTask.exception.NotFoundException;
 import com.example.finalTask.mapper.BookingMapper;
+import com.example.finalTask.producer.BookingEventProducer;
 import com.example.finalTask.repository.BookingRepository;
 import com.example.finalTask.repository.RoomRepository;
 import com.example.finalTask.repository.UserRepository;
@@ -26,6 +28,8 @@ public class BookingServiceImpl implements BookingService {
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
     private final BookingMapper bookingMapper;
+    private final BookingEventProducer bookingEventProducer;
+
 
     public List<BookingResponseDto> findAll() {
         return bookingRepository.findAll().stream()
@@ -60,6 +64,16 @@ public class BookingServiceImpl implements BookingService {
         booking.setUser(user);
 
         Booking savedBooking = bookingRepository.save(booking);
+        BookingEvent event = BookingEvent.builder()
+                .userId(bookingRequestDto.getUserId())
+                .roomId(bookingRequestDto.getRoomId())
+                .checkInDate(bookingRequestDto.getCheckInDate())
+                .checkOutDate(bookingRequestDto.getCheckOutDate())
+                .eventDate(LocalDate.now())
+                .build();
+
+        bookingEventProducer.sendBookingEvent(event);
+
         return bookingMapper.toDto(savedBooking);
     }
 

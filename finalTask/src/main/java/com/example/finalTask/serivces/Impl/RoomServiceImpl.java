@@ -89,7 +89,7 @@ public class RoomServiceImpl implements RoomService {
                 .and(RoomSpecification.withMaxPeople(filter.getMaxPeople()))
                 .and(RoomSpecification.availableBetween(filter.getCheckInDate(), filter.getCheckOutDate()));
 
-        Page<Room> page = roomRepository.findAll(spec, pageable);
+        Page<Room> page = roomRepository.findAll(spec, (org.springframework.data.domain.Pageable) pageable);
 
         return RoomsPageResponse.builder()
                 .rooms(page.getContent().stream()

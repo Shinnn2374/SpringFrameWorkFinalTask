@@ -52,6 +52,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/hotels/filter").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/api/v1/rooms/filter").permitAll()
+                        .requestMatchers("/api/v1/admin/statistics/**").hasRole("ADMIN")
 
                         // Просмотр отелей (публичный доступ)
                         .requestMatchers(HttpMethod.GET, "/api/v1/hotels/**").permitAll()

@@ -1,11 +1,13 @@
 package com.example.finalTask.serivces.Impl;
 
+import com.example.finalTask.dto.statistics.UserRegistrationEvent;
 import com.example.finalTask.dto.user.UserRequestDto;
 import com.example.finalTask.dto.user.UserResponseDto;
 import com.example.finalTask.entity.User;
 import com.example.finalTask.exception.BadRequestException;
 import com.example.finalTask.exception.NotFoundException;
 import com.example.finalTask.mapper.UserMapper;
+import com.example.finalTask.producer.UserRegistrationEventProducer;
 import com.example.finalTask.repository.UserRepository;
 import com.example.finalTask.serivces.UserService;
 import com.example.finalTask.utils.UserRole;
@@ -14,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,6 +26,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final UserRegistrationEventProducer userRegistrationEventProducer;
+
 
     @Override
     public UserResponseDto findById(long id) {
@@ -41,6 +46,13 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.toEntity(userRequestDto);
         user.setPassword(passwordEncoder.encode(userRequestDto.getPassword()));
         User savedUser = userRepository.save(user);
+        UserRegistrationEvent event = UserRegistrationEvent.builder()
+                .userId(savedUser.getId())
+                .registrationDate(LocalDate.now())
+                .build();
+
+        userRegistrationEventProducer.sendUserRegistrationEvent(event);
+
         return userMapper.toDto(savedUser);
     }
 
