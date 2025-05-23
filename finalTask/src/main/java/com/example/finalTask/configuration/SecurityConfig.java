@@ -14,7 +14,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
@@ -22,17 +21,36 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
+                        // Публичные эндпоинты
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/api/v1/users/register").permitAll()
-                        .requestMatchers("/api/v1/hotels/**").hasAnyRole(UserRole.ROLE_ADMIN.name(), UserRole.ROLE_USER.name())
-                        .requestMatchers("/api/v1/rooms/**").hasAnyRole(UserRole.ROLE_ADMIN.name(), UserRole.ROLE_USER.name())
-                        .requestMatchers("/api/v1/bookings/**").hasAnyRole(UserRole.ROLE_ADMIN.name(), UserRole.ROLE_USER.name())
+
+                        // Эндпоинты для отелей
+                        .requestMatchers(HttpMethod.GET, "/api/v1/hotels/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/hotels/**").hasRole(UserRole.ROLE_ADMIN.name())
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/hotels/**").hasRole(UserRole.ROLE_ADMIN.name())
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/hotels/**").hasRole(UserRole.ROLE_ADMIN.name())
+                        .requestMatchers(HttpMethod.POST, "/api/v1/hotels/**/rating").hasAnyRole(UserRole.ROLE_USER.name(), UserRole.ROLE_ADMIN.name())
+
+                        // Эндпоинты для комнат
+                        .requestMatchers(HttpMethod.GET, "/api/v1/rooms/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/rooms/**").hasRole(UserRole.ROLE_ADMIN.name())
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/rooms/**").hasRole(UserRole.ROLE_ADMIN.name())
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/rooms/**").hasRole(UserRole.ROLE_ADMIN.name())
+
+                        // Эндпоинты для бронирований
+                        .requestMatchers(HttpMethod.GET, "/api/v1/bookings/**").hasAnyRole(UserRole.ROLE_USER.name(), UserRole.ROLE_ADMIN.name())
+                        .requestMatchers(HttpMethod.POST, "/api/v1/bookings/**").hasAnyRole(UserRole.ROLE_USER.name(), UserRole.ROLE_ADMIN.name())
+
+                        // Админские эндпоинты
                         .requestMatchers("/api/v1/admin/**").hasRole(UserRole.ROLE_ADMIN.name())
+
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
@@ -47,7 +65,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 }

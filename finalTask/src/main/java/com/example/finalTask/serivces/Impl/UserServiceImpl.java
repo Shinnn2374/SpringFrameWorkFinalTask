@@ -8,6 +8,7 @@ import com.example.finalTask.exception.NotFoundException;
 import com.example.finalTask.mapper.UserMapper;
 import com.example.finalTask.repository.UserRepository;
 import com.example.finalTask.serivces.UserService;
+import com.example.finalTask.utils.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -88,5 +89,21 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new NotFoundException("User not found with username: " + username));
         return userMapper.toDto(user);
+    }
+
+    @Transactional
+    public UserResponseDto register(UserRequestDto userRequestDto) {
+        if (userRepository.existsByUsernameOrEmail(
+                userRequestDto.getUsername(),
+                userRequestDto.getEmail())) {
+            throw new BadRequestException("Username or email already exists");
+        }
+
+        User user = userMapper.toEntity(userRequestDto);
+        user.setPassword(passwordEncoder.encode(userRequestDto.getPassword()));
+        user.setRole(UserRole.ROLE_USER); // По умолчанию регистрируем как USER
+
+        User savedUser = userRepository.save(user);
+        return userMapper.toDto(savedUser);
     }
 }

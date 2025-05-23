@@ -1,5 +1,8 @@
 package com.example.finalTask.controller;
 
+import com.example.finalTask.dto.auth.AuthRequest;
+import com.example.finalTask.dto.auth.AuthResponse;
+import com.example.finalTask.serivces.Impl.JwtService;
 import com.example.finalTask.serivces.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
+
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final UserService userService;
