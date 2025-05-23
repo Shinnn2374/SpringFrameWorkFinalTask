@@ -1,4 +1,19 @@
 spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: hotel-stats-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.example.hotelbooking.dto.statistics"
+    data:
+      mongodb:
+        host: localhost
+        port: 27017
+        database: hotel_stats
+
   datasource:
     url: jdbc:postgresql://localhost:5432/hotelDb
     username: postgres

@@ -43,6 +43,11 @@ dependencies {
 	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
+
+	// kafka and mongo
+	implementation("org.springframework.kafka:spring-kafka:3.3.5")
+	implementation("org.springframework.boot:spring-boot-starter-data-mongodb:3.4.4")
+	implementation("com.opencsv:opencsv:5.5.2")
 }
 
 tasks.withType<Test> {
