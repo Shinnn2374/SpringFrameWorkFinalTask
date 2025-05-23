@@ -1,14 +1,13 @@
 package com.example.finalTask.controller;
 
 
-import com.example.finalTask.dto.hotel.HotelRequestDto;
-import com.example.finalTask.dto.hotel.HotelResponseDto;
-import com.example.finalTask.dto.hotel.HotelsListResponseDto;
+import com.example.finalTask.dto.hotel.*;
 import com.example.finalTask.dto.rating.UpdateRatingRequestDto;
 import com.example.finalTask.serivces.HotelService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -56,5 +55,12 @@ public class HotelController {
             @RequestBody @Valid UpdateRatingRequestDto updateRatingRequest
     ) {
         return hotelService.updateRating(id, updateRatingRequest);
+    }
+
+    @GetMapping("/filter")
+    public HotelsPageResponse filterHotels(
+            @ModelAttribute @Valid HotelFilter filter,
+            @PageableDefault(size = 10, sort = "name") Pageable pageable) {
+        return hotelService.findAll(filter, pageable);
     }
 }

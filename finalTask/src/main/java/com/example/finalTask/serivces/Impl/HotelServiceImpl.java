@@ -1,18 +1,18 @@
 package com.example.finalTask.serivces.Impl;
 
-import com.example.finalTask.dto.hotel.HotelRequestDto;
-import com.example.finalTask.dto.hotel.HotelResponseDto;
-import com.example.finalTask.dto.hotel.HotelsListResponseDto;
+import com.example.finalTask.dto.hotel.*;
 import com.example.finalTask.dto.rating.UpdateRatingRequestDto;
 import com.example.finalTask.entity.Hotel;
 import com.example.finalTask.exception.BadRequestException;
 import com.example.finalTask.exception.NotFoundException;
+import com.example.finalTask.filter.HotelSpecification;
 import com.example.finalTask.mapper.HotelMapper;
 import com.example.finalTask.repository.HotelRepository;
 import com.example.finalTask.serivces.HotelService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -88,4 +88,30 @@ public class HotelServiceImpl implements HotelService {
         Hotel updatedHotel = hotelRepository.save(hotel);
         return hotelMapper.toDto(updatedHotel);
     }
+
+    public HotelsPageResponse findAll(HotelFilter filter, Pageable pageable) {
+        Specification<Hotel> spec = buildSpecification(filter);
+        Page<Hotel> page = hotelRepository.findAll(spec, pageable);
+
+        return HotelsPageResponse.builder()
+                .hotels(page.getContent().stream()
+                        .map(hotelMapper::toDto)
+                        .collect(Collectors.toList()))
+                .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
+                .currentPage(page.getNumber())
+                .pageSize(page.getSize())
+                .build();
+    }
+
+    private Specification<Hotel> buildSpecification(HotelFilter filter) {
+        return Specification.where(HotelSpecification.withId(filter.getId()))
+                .and(HotelSpecification.withName(filter.getName()))
+                .and(HotelSpecification.withCity(filter.getCity()))
+                .and(HotelSpecification.withAddress(filter.getAddress()))
+                .and(HotelSpecification.withDistanceFromCenter(filter.getMaxDistanceFromCenter()))
+                .and(HotelSpecification.withMinRating(filter.getMinRating()))
+                .and(HotelSpecification.withMaxRating(filter.getMaxRating()));
+    }
+
 }

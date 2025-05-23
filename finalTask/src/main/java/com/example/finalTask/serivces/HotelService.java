@@ -1,8 +1,6 @@
 package com.example.finalTask.serivces;
 
-import com.example.finalTask.dto.hotel.HotelRequestDto;
-import com.example.finalTask.dto.hotel.HotelResponseDto;
-import com.example.finalTask.dto.hotel.HotelsListResponseDto;
+import com.example.finalTask.dto.hotel.*;
 import com.example.finalTask.dto.rating.UpdateRatingRequestDto;
 import org.springframework.data.domain.Pageable;
 
@@ -14,4 +12,5 @@ public interface HotelService {
     HotelResponseDto update(Long id, HotelRequestDto hotelRequestDto);
     void delete(Long id);
     HotelResponseDto updateRating(Long hotelId, UpdateRatingRequestDto updateRatingRequest);
+    HotelsPageResponse findAll(HotelFilter filter, Pageable pageable);
 }
