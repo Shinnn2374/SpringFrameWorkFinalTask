@@ -1,13 +1,17 @@
 package com.example.finalTask.controller;
 
+import com.example.finalTask.dto.room.RoomFilter;
 import com.example.finalTask.dto.room.RoomRequestDto;
 import com.example.finalTask.dto.room.RoomResponseDto;
+import com.example.finalTask.dto.room.RoomsPageResponse;
 import com.example.finalTask.serivces.RoomService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.print.Pageable;
 import java.util.List;
 
 @RestController
@@ -44,5 +48,12 @@ public class RoomController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         roomService.delete(id);
+    }
+
+    @GetMapping("/filter")
+    public RoomsPageResponse filterRooms(
+            @ModelAttribute @Valid RoomFilter filter,
+            @PageableDefault(size = 10, sort = "price") Pageable pageable) {
+        return roomService.findAll(filter, pageable);
     }
 }
