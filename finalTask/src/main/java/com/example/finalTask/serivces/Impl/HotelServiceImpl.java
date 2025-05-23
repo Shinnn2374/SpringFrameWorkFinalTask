@@ -3,7 +3,9 @@ package com.example.finalTask.serivces.Impl;
 import com.example.finalTask.dto.hotel.HotelRequestDto;
 import com.example.finalTask.dto.hotel.HotelResponseDto;
 import com.example.finalTask.dto.hotel.HotelsListResponseDto;
+import com.example.finalTask.dto.rating.UpdateRatingRequestDto;
 import com.example.finalTask.entity.Hotel;
+import com.example.finalTask.exception.BadRequestException;
 import com.example.finalTask.exception.NotFoundException;
 import com.example.finalTask.mapper.HotelMapper;
 import com.example.finalTask.repository.HotelRepository;
@@ -66,5 +68,31 @@ public class HotelServiceImpl implements HotelService {
             throw new NotFoundException("Hotel not found with id: " + id);
         }
         hotelRepository.deleteById(id);
+    }
+
+    @Transactional
+    public HotelResponseDto updateRating(Long hotelId, UpdateRatingRequestDto updateRatingRequest) {
+        if (updateRatingRequest.getNewMark() < 1 || updateRatingRequest.getNewMark() > 5) {
+            throw new BadRequestException("Rating must be between 1 and 5");
+        }
+
+        Hotel hotel = hotelRepository.findById(hotelId)
+                .orElseThrow(() -> new NotFoundException("Hotel not found with id: " + hotelId));
+
+        double currentRating = hotel.getRating();
+        int numberOfRatings = hotel.getNumberOfRatings();
+
+        // Вычисляем новую оценку по формуле
+        double totalRating = currentRating * numberOfRatings;
+        totalRating = totalRating - currentRating + updateRatingRequest.getNewMark();
+
+        double newRating = Math.round((totalRating / numberOfRatings) * 10) / 10.0;
+        numberOfRatings += 1;
+
+        hotel.setRating(newRating);
+        hotel.setNumberOfRatings(numberOfRatings);
+
+        Hotel updatedHotel = hotelRepository.save(hotel);
+        return hotelMapper.toDto(updatedHotel);
     }
 }

@@ -4,6 +4,7 @@ package com.example.finalTask.controller;
 import com.example.finalTask.dto.hotel.HotelRequestDto;
 import com.example.finalTask.dto.hotel.HotelResponseDto;
 import com.example.finalTask.dto.hotel.HotelsListResponseDto;
+import com.example.finalTask.dto.rating.UpdateRatingRequestDto;
 import com.example.finalTask.serivces.HotelService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -45,5 +46,12 @@ public class HotelController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         hotelService.delete(id);
+    }
+
+    @PostMapping("/{id}/rating")
+    public HotelResponseDto updateRating(
+            @PathVariable Long id,
+            @RequestBody @Valid UpdateRatingRequestDto updateRatingRequest) {
+        return hotelService.updateRating(id, updateRatingRequest);
     }
 }
